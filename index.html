@@ -5,11 +5,12 @@
     <title>Title</title>
 </head>
 <body>
-<canvas id="canvas" style="width: 800px;height: 600px;border: 1px solid #112233"></canvas>
 <input type="text" id="iptSize" placeholder="大小">
 <input type="text" id="iptColor" placeholder="颜色">
 <input type="button" id="btnSave" value="保存">
 <input type="button" id="btnClear" value="清空">
+<canvas id="canvas" style="width: 800px;height: 600px;border: 1px solid #112233"></canvas>
+
 </body>
 <script>
     var canvas = document.getElementById('canvas'),
@@ -29,8 +30,8 @@
         var x1 = e.clientX - canvas.getBoundingClientRect().left,
             y1 = e.clientY - canvas.getBoundingClientRect().top;
 
-        lineSize = iptSize.value;
-        lineColor = iptColor.value;
+        lineSize = (iptSize.value?iptSize.value:10);
+        lineColor = (iptColor.value?iptColor.value:'#000000');
         ctx.beginPath();
         ctx.fillStyle = lineColor;
         ctx.lineCap = "round";
