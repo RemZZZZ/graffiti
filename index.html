@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<canvas id="canvas" style="width: 800px;height: 600px;border: 1px solid #112233"></canvas>
+<input type="text" id="iptSize" placeholder="大小">
+<input type="text" id="iptColor" placeholder="颜色">
+<input type="button" id="btnSave" value="保存">
+<input type="button" id="btnClear" value="清空">
+</body>
+<script>
+    var canvas = document.getElementById('canvas'),
+        ctx = canvas.getContext('2d'),
+        btnClear = document.getElementById('btnClear'),
+        btnSave = document.getElementById('btnSave'),
+        iptColor = document.getElementById('iptColor'),
+        iptSize = document.getElementById('iptSize'),
+        canvasWidth = 800,
+        canvasHeight = 600;
+    canvas.setAttribute('width',canvasWidth);
+    canvas.setAttribute('height',canvasHeight);
+
+
+    canvas.addEventListener('mousedown',function(e){
+        var e = e || window.event;
+        var x1 = e.clientX - canvas.getBoundingClientRect().left,
+            y1 = e.clientY - canvas.getBoundingClientRect().top;
+
+        lineSize = iptSize.value;
+        lineColor = iptColor.value;
+        ctx.beginPath();
+        ctx.fillStyle = lineColor;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.arc(x1, y1, lineSize, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.closePath();
+
+        document.onmousemove = function(e) {
+            var e = e || window.event;
+            var x2 = e.clientX - canvas.getBoundingClientRect().left,
+                y2 = e.clientY - canvas.getBoundingClientRect().top;
+            var asin = lineSize * Math.sin(Math.atan((y2 - y1) / (x2 - x1)));
+            var acos = lineSize * Math.cos(Math.atan((y2 - y1) / (x2 - x1)));
+            //分别获取矩形的四个点的xy轴位置
+            var x3 = x1 + asin;
+            var y3 = y1 - acos;
+            var x4 = x1 - asin;
+            var y4 = y1 + acos;
+            var x5 = x2 + asin;
+            var y5 = y2 - acos;
+            var x6 = x2 - asin;
+            var y6 = y2 + acos;
+
+            ctx.beginPath();
+            ctx.fillStyle = lineColor;
+            ctx.arc(x2, y2, lineSize, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+            ctx.beginPath();
+            ctx.fillStyle = lineColor;
+            ctx.moveTo(x3, y3);
+            ctx.lineTo(x5, y5);
+            ctx.lineTo(x6, y6);
+            ctx.lineTo(x4, y4);
+            ctx.fill();
+            ctx.closePath();
+            x1 = x2;
+            y1 = y2;
+        };
+        canvas.onmouseup = function() {
+            document.onmousemove = null;
+            document.onmouseup = null;
+        };
+    })
+
+    btnClear.addEventListener('click',function(){
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    })
+
+    btnSave.addEventListener('click',function(){
+        var imgData = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+        var filename = '图片.png';
+        saveFile(imgData,filename)
+
+    })
+
+    var saveFile = function(data, filename) {
+        var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
+        save_link.href = data;
+        save_link.download = filename;
+        var event = document.createEvent('MouseEvents');
+        event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        save_link.dispatchEvent(event);
+    };
+
+</script>
+</html>
